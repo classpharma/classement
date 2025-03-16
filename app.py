@@ -1,15 +1,15 @@
-from flask import Flask, render_template, request
 import os
-import re
+from flask import Flask, render_template, request
+from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
+import re
 
 app = Flask(__name__)
 
-# Folder to store uploaded files temporarily
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Assurer que le fichier ue14_only.pdf est dans le dossier static
+UE14_FILE_PATH = os.path.join(app.root_path, 'static', 'ue14_only.pdf')
 
-# Helper function to extract data from PDF
+# Fonction pour extraire les données des fichiers PDF
 def extract_data_from_pdf(file_path, extract_ids_only=False):
     reader = PdfReader(file_path)
     results = []
@@ -29,60 +29,58 @@ def extract_data_from_pdf(file_path, extract_ids_only=False):
                     results.append({"id": student_id, "note": note, "classement": classement})
     return set(results) if extract_ids_only else results
 
-# Function to compare student results
-def compare_notes_with_ue14_only(colle_path, ue14_path, target_id):
-    if not os.path.exists(colle_path) or not colle_path.endswith(".pdf"):
-        raise ValueError(f"Fichier non valide : {colle_path}")
-    if not os.path.exists(ue14_path) or not ue14_path.endswith(".pdf"):
-        raise ValueError(f"Fichier non valide : {ue14_path}")
+# Comparer les notes avec le fichier UE14
+def compare_notes_with_ue14_only(colle_results_path, target_id):
+    ue14_only_ids = extract_data_from_pdf(UE14_FILE_PATH, extract_ids_only=True)
+    students_data = extract_data_from_pdf(colle_results_path)
     
-    ue14_ids = extract_data_from_pdf(ue14_path, extract_ids_only=True)
-    students = extract_data_from_pdf(colle_path)
-    
-    target_student = next((s for s in students if s["id"] == target_id), None)
+    target_student = next((student for student in students_data if student["id"] == target_id), None)
     if not target_student:
-        raise ValueError(f"Étudiant avec ID {target_id} introuvable.")
+        return {"error": f"Étudiant avec ID {target_id} introuvable dans les résultats de la colle."}
     
-    general_higher = [s for s in students if s["note"] > target_student["note"]]
+    # Calcul du classement général (tous les étudiants)
+    general_higher = [student for student in students_data if student["note"] > target_student["note"]]
     classement_general = len(general_higher) + 1
-    total_students = len(students)
-    
-    pharma_students = [s for s in students if s["id"] in ue14_ids]
-    pharma_higher = [s for s in pharma_students if s["note"] > target_student["note"]]
+    total_students = len(students_data)
+
+    # Filtrer les étudiants pharma (ceux présents dans le fichier ue14_only)
+    pharma_students = [student for student in students_data if student["id"] in ue14_only_ids]
+    pharma_higher = [student for student in pharma_students if student["note"] > target_student["note"]]
     classement_pharma = len(pharma_higher) + 1
-    total_pharma = len(pharma_students)
-    
-    return {
-        "classement_general": f"{classement_general}/{total_students}",
-        "classement_pharma": f"{classement_pharma}/{total_pharma}",
-        "pharma_mieux": len(pharma_higher),
-        "pharma_pire": total_pharma - len(pharma_higher)
+    total_pharma_students = len(pharma_students)
+
+    summary = {
+        "higher_notes_count_pharma": len(pharma_higher),
+        "lower_or_equal_notes_count_pharma": total_pharma_students - len(pharma_higher),
     }
 
-# Route to display form and handle file uploads
-@app.route("/", methods=["GET", "POST"])
+    return {
+        "summary": summary,
+        "classement_general": f"{classement_general}/{total_students}",
+        "classement_pharma": f"{classement_pharma}/{total_pharma_students}"
+    }
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
     result = None
     error = None
-    
-    if request.method == "POST":
+    if request.method == 'POST':
         try:
-            colle_file = request.files["colle"]
-            ue14_file = request.files["ue14"]
-            target_id = request.form["target_id"].strip()
-            
-            colle_path = os.path.join(UPLOAD_FOLDER, colle_file.filename)
-            ue14_path = os.path.join(UPLOAD_FOLDER, ue14_file.filename)
-            
+            # Fichier des résultats de la colle
+            colle_file = request.files['colle']
+            target_id = request.form['target_id']
+            colle_path = os.path.join(app.root_path, 'static', secure_filename(colle_file.filename))
             colle_file.save(colle_path)
-            ue14_file.save(ue14_path)
             
-            result = compare_notes_with_ue14_only(colle_path, ue14_path, target_id)
+            # Comparer les résultats avec les données de la colle
+            result = compare_notes_with_ue14_only(colle_path, target_id)
+            
+            # Supprimer les fichiers après traitement
+            os.remove(colle_path)
         except Exception as e:
             error = str(e)
     
-    return render_template("index.html", result=result, error=error)
+    return render_template('index.html', result=result, error=error)
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Récupère le port depuis l'environnement, sinon utilise 5000
-    app.run(host="0.0.0.0", port=port, debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
