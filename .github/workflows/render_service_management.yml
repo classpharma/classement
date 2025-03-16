@@ -2,11 +2,11 @@ name: Planifier l'arrêt et le démarrage du service Render
 
 on:
   schedule:
-    # Cela va exécuter l'action tous les jours à 00h00 (minuit) UTC
+    # Exécuter tous les jours à minuit UTC
     - cron: '0 0 * * *'
-    # Et tous les jours à 08h00 (8h du matin) UTC pour redémarrer
+    # Exécuter tous les jours à 08h00 UTC
     - cron: '0 8 * * *'
-  workflow_dispatch:  # Permet d'exécuter manuellement le workflow via l'interface GitHub
+  workflow_dispatch:  # Permet d'exécuter manuellement via GitHub
 
 jobs:
   manage_render_service:
@@ -15,11 +15,11 @@ jobs:
       - name: Arrêter le service Render à minuit
         if: ${{ github.event.schedule == '0 0 * * *' }}  # Condition pour arrêter à minuit UTC
         run: |
-          curl -X DELETE https://api.render.com/v1/services/srv-cvbat05svqrc73c5aarg/stop \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_TOKEN }}"
+          curl -X DELETE "https://api.render.com/v1/services/srv-cvbat05svqrc73c5aarg/stop" \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_TOKEN }}"  # Utilisation correcte du secret
 
       - name: Démarrer le service Render à 8h
         if: ${{ github.event.schedule == '0 8 * * *' }}  # Condition pour démarrer à 8h UTC
         run: |
-          curl -X POST https://api.render.com/v1/services/srv-cvbat05svqrc73c5aarg/start \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_TOKEN }}"
+          curl -X POST "https://api.render.com/v1/services/srv-cvbat05svqrc73c5aarg/start" \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_TOKEN }}"  # Utilisation correcte du secret
