@@ -6,6 +6,7 @@ on:
     - cron: '0 0 * * *'
     # Et tous les jours à 08h00 (8h du matin) UTC pour redémarrer
     - cron: '0 8 * * *'
+  workflow_dispatch:  # Permet d'exécuter manuellement le workflow via l'interface GitHub
 
 jobs:
   manage_render_service:
