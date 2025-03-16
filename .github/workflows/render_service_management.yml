@@ -12,13 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Arrêter le service Render à minuit
-        if: github.event.schedule == '0 0 * * *'  # Condition pour arrêter à minuit UTC
+        if: ${{ github.event.schedule == '0 0 * * *' }}  # Condition pour arrêter à minuit UTC
         run: |
           curl -X DELETE https://api.render.com/v1/services/srv-cvbat05svqrc73c5aarg/stop \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_TOKEN }}"
 
       - name: Démarrer le service Render à 8h
-        if: github.event.schedule == '0 8 * * *'  # Condition pour démarrer à 8h UTC
+        if: ${{ github.event.schedule == '0 8 * * *' }}  # Condition pour démarrer à 8h UTC
         run: |
-          curl -X POST https://api.render.com/v1/services/{SERVICE_ID}/start \
+          curl -X POST https://api.render.com/v1/services/srv-cvbat05svqrc73c5aarg/start \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_TOKEN }}"
