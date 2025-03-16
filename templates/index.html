@@ -1,142 +1,142 @@
+<!-- index.html (version stylisée + détection de serveur Render) -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyse des Résultats - Colle et UE14</title>
-    <style>
-        /* Style global */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-
-        header {
-            background-color: #5f6368;
-            color: white;
-            text-align: center;
-            padding: 1em;
-        }
-
-        h1 {
-            font-size: 1.5em;
-        }
-
-        /* Conteneur principal */
-        .container {
-            width: 90%;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-        }
-
-        input[type="file"],
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            font-size: 1em;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-            width: 100%;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        /* Style des résultats */
-        .results {
-            margin-top: 20px;
-        }
-
-        .results p {
-            background-color: #e7e7e7;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .error {
-            color: red;
-        }
-
-        /* Media Query pour les petits écrans */
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 1.2em;
-            }
-
-            .container {
-                width: 100%;
-                margin: 10px;
-                padding: 15px;
-            }
-
-            button {
-                padding: 12px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comparaison Résultats Étudiant</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff1f5;
+      color: #6b021c;
+    }
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      padding: 2rem;
+    }
+    .spinner {
+      border: 6px solid #fcd3e1;
+      border-top: 6px solid #db2777;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .message {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+    #main-content {
+      display: none;
+      padding: 1rem;
+    }
+    .container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      padding: 2rem;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #db2777;
+    }
+    label, input, button {
+      display: block;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    button {
+      background-color: #db2777;
+      color: white;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      background-color: #be185d;
+    }
+    .result {
+      margin-top: 1rem;
+      background-color: #fce7f3;
+      padding: 1rem;
+      border-radius: 12px;
+      font-size: 1rem;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Analyse des Résultats - Colle et UE14</h1>
-    </header>
+  <div id="loading-screen" class="loading-container">
+    <div class="spinner"></div>
+    <div class="message">Le serveur se réveille…<br>Wick regle le probleme 100% reel</div>
+  </div>
 
+  <div id="main-content">
     <div class="container">
-        <h2>Soumettre les Fichiers PDF</h2>
-
-        <!-- Formulaire de téléchargement -->
-        <form method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="colle">Télécharger le fichier des résultats de la colle</label>
-                <input type="file" name="colle" required>
-            </div>
-
-            <div class="form-group">
-                <label for="target_id">ID de l'étudiant (ex. 22407956)</label>
-                <input type="text" name="target_id" required>
-            </div>
-
-            <button type="submit">Analyser</button>
-        </form>
-
-        <!-- Affichage des résultats ou erreurs -->
-        <div class="results">
-            {% if result %}
-                <p><strong>Classement général :</strong> {{ result.classement_general }}</p>
-                <p><strong>Classement dans les étudiants "pharma" :</strong> {{ result.classement_pharma }}</p>
-            {% endif %}
-
-            {% if error %}
-                <p class="error">{{ error }}</p>
-            {% endif %}
-        </div>
+      <h2>Comparer un étudiant</h2>
+      <form id="uploadForm">
+        <label for="file">Fichier résultats de la colle :</label>
+        <input type="file" id="file" name="file" accept="application/pdf" required>
+        <label for="student_id">ID Étudiant :</label>
+        <input type="text" id="student_id" name="student_id" required>
+        <button type="submit">Comparer</button>
+      </form>
+      <div id="result" class="result" style="display: none;"></div>
     </div>
+  </div>
+
+  <script>
+    async function checkServerReady() {
+      try {
+        const response = await fetch("/ping", { cache: "no-store" });
+        if (response.ok) {
+          document.getElementById("loading-screen").style.display = "none";
+          document.getElementById("main-content").style.display = "block";
+        } else {
+          throw new Error();
+        }
+      } catch (e) {
+        setTimeout(checkServerReady, 5000);
+      }
+    }
+    checkServerReady();
+
+    document.getElementById("uploadForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append("file", document.getElementById("file").files[0]);
+      formData.append("student_id", document.getElementById("student_id").value);
+
+      const response = await fetch("/compare", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      const resultBox = document.getElementById("result");
+      resultBox.style.display = "block";
+      if (data.error) {
+        resultBox.innerHTML = `<strong>Erreur :</strong> ${data.error}`;
+      } else {
+        resultBox.innerHTML = `Classement général : ${data.classement_general}<br>Classement pharma : ${data.classement_pharma}`;
+      }
+    });
+  </script>
 </body>
 </html>
