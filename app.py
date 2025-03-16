@@ -3,18 +3,12 @@ from PyPDF2 import PdfReader
 import os
 import re
 import uuid
-from flask_cors import CORS
-import time
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 PHARMA_IDS_PATH = 'static/ue14_only.pdf'
-
-server_ready = True
-# Enable CORS for all routes (allows all origins by default)
-CORS(app)
 
 # Valider le fichier
 def validate_file(file_path):
@@ -64,12 +58,6 @@ def compare_notes_with_ue14_only(colle_results_path, ue14_ids_set, target_id):
         "classement_general": f"{classement_general}/{total_students}",
         "classement_pharma": f"{classement_pharma}/{total_pharma}"
     }
-
-@app.route('/ping')
-def ping():
-    if not server_ready:  # Check if the server is ready
-        return jsonify({"status": "not ready"}), 503
-    return jsonify({"status": "ready"}), 200
 
 @app.route('/compare', methods=['POST'])
 def compare():
