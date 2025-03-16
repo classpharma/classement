@@ -2,44 +2,148 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Classement étudiant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse des Résultats - Colle et UE14</title>
     <style>
-        body { font-family: sans-serif; background: #f0f0f0; padding: 2em; }
-        .container { max-width: 700px; background: white; margin: auto; padding: 2em; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input, button { margin: 1em 0; padding: 10px; width: 100%; }
-        .result, .error { padding: 1em; margin-top: 1em; border-radius: 5px; }
-        .result { background: #eaffea; }
-        .error { background: #ffe0e0; color: red; }
+        /* Style global */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #5f6368;
+            color: white;
+            text-align: center;
+            padding: 1em;
+        }
+
+        h1 {
+            font-size: 1.5em;
+        }
+
+        /* Conteneur principal */
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+        }
+
+        input[type="file"],
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Style des résultats */
+        .results {
+            margin-top: 20px;
+        }
+
+        .results p {
+            background-color: #e7e7e7;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        /* Media Query pour les petits écrans */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.2em;
+            }
+
+            .container {
+                width: 100%;
+                margin: 10px;
+                padding: 15px;
+            }
+
+            button {
+                padding: 12px;
+            }
+        }
     </style>
 </head>
 <body>
+    <header>
+        <h1>Analyse des Résultats - Colle et UE14</h1>
+    </header>
+
     <div class="container">
-        <h2>Comparateur de Classement Étudiant</h2>
+        <h2>Soumettre les Fichiers PDF</h2>
+
+        <!-- Formulaire de téléchargement -->
         <form method="POST" enctype="multipart/form-data">
-            <label>Résultats colle (PDF)</label>
-            <input type="file" name="colle" accept="application/pdf" required>
+            <div class="form-group">
+                <label for="colle">Télécharger le fichier des résultats de la colle</label>
+                <input type="file" name="colle" required>
+            </div>
 
-            <label>Liste UE14 uniquement (PDF)</label>
-            <input type="file" name="ue14" accept="application/pdf" required>
+            <div class="form-group">
+                <label for="ue14">Télécharger le fichier de la liste UE14</label>
+                <input type="file" name="ue14" required>
+            </div>
 
-            <label>ID étudiant à analyser :</label>
-            <input type="text" name="target_id" placeholder="Ex: 22407956" required>
+            <div class="form-group">
+                <label for="target_id">ID de l'étudiant (ex. 22407956)</label>
+                <input type="text" name="target_id" required>
+            </div>
 
-            <button type="submit">Lancer l'analyse</button>
+            <button type="submit">Analyser</button>
         </form>
 
-        {% if result %}
-            <div class="result">
+        <!-- Affichage des résultats ou erreurs -->
+        <div class="results">
+            {% if result %}
                 <p><strong>Classement général :</strong> {{ result.classement_general }}</p>
-                <p><strong>Classement parmi les étudiants UE14 :</strong> {{ result.classement_pharma }}</p>
-                <p><strong>Pharma mieux classés :</strong> {{ result.pharma_mieux }}</p>
-                <p><strong>Pharma moins bien classés ou égal :</strong> {{ result.pharma_pire }}</p>
-            </div>
-        {% endif %}
+                <p><strong>Classement dans les étudiants "pharma" :</strong> {{ result.classement_pharma }}</p>
+                <p><strong>Nombre d'étudiants pharma avec une meilleure note :</strong> {{ result.pharma_mieux }}</p>
+                <p><strong>Nombre d'étudiants pharma avec une note inférieure ou égale :</strong> {{ result.pharma_pire }}</p>
+            {% endif %}
 
-        {% if error %}
-            <div class="error">{{ error }}</div>
-        {% endif %}
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>
