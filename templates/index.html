@@ -38,7 +38,7 @@
       font-weight: 500;
     }
     #main-content {
-      display: none;
+      display: block;
       padding: 1rem;
     }
     .container {
@@ -81,10 +81,6 @@
   </style>
 </head>
 <body>
-  <div id="loading-screen" class="loading-container">
-    <div class="spinner"></div>
-    <div class="message">Le serveur se réveille…<br>Wick regle le probleme 100% reel</div>
-  </div>
 
   <div id="main-content">
     <div class="container">
@@ -101,28 +97,6 @@
   </div>
 
   <script>
-    let loadingTimeout;
-
-    async function checkServerReady() {
-      try {
-        const response = await fetch("/ping", { cache: "no-store" });
-
-        if (response.ok) {
-          // Set a minimum display time (e.g., 2 seconds)
-          loadingTimeout = setTimeout(() => {
-            document.getElementById("loading-screen").style.display = "none";
-            document.getElementById("main-content").style.display = "block";
-          }, 2000); // 2 seconds minimum display time for the loading screen
-        } else {
-          throw new Error('Server not ready');
-        }
-      } catch (e) {
-        console.log("Server not ready, retrying in 5 seconds...");
-        setTimeout(checkServerReady, 5000); // Retry after 5 seconds if server is not ready
-      }
-    }
-    checkServerReady();
-
     document.getElementById("uploadForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       const formData = new FormData();
