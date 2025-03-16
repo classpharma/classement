@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Classement étudiant</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f0f0; padding: 2em; }
+        .container { max-width: 700px; background: white; margin: auto; padding: 2em; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input, button { margin: 1em 0; padding: 10px; width: 100%; }
+        .result, .error { padding: 1em; margin-top: 1em; border-radius: 5px; }
+        .result { background: #eaffea; }
+        .error { background: #ffe0e0; color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Comparateur de Classement Étudiant</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <label>Résultats colle (PDF)</label>
+            <input type="file" name="colle" accept="application/pdf" required>
+
+            <label>Liste UE14 uniquement (PDF)</label>
+            <input type="file" name="ue14" accept="application/pdf" required>
+
+            <label>ID étudiant à analyser :</label>
+            <input type="text" name="target_id" placeholder="Ex: 22407956" required>
+
+            <button type="submit">Lancer l'analyse</button>
+        </form>
+
+        {% if result %}
+            <div class="result">
+                <p><strong>Classement général :</strong> {{ result.classement_general }}</p>
+                <p><strong>Classement parmi les étudiants UE14 :</strong> {{ result.classement_pharma }}</p>
+                <p><strong>Pharma mieux classés :</strong> {{ result.pharma_mieux }}</p>
+                <p><strong>Pharma moins bien classés ou égal :</strong> {{ result.pharma_pire }}</p>
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>
