@@ -3,7 +3,8 @@ from PyPDF2 import PdfReader
 import os
 import re
 import uuid
-from flask_cors import CORS  # Import CORS from flask_cors
+from flask_cors import CORS
+import time
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -11,11 +12,9 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 PHARMA_IDS_PATH = 'static/ue14_only.pdf'
 
+server_ready = True
 # Enable CORS for all routes (allows all origins by default)
-CORS(app)  # This will allow requests from any origin by default
-
-# Or, you can allow only specific origins like GitHub Pages:
-# CORS(app, resources={r"/*": {"origins": "https://classpharma.github.io"}})
+CORS(app)
 
 # Valider le fichier
 def validate_file(file_path):
@@ -68,7 +67,9 @@ def compare_notes_with_ue14_only(colle_results_path, ue14_ids_set, target_id):
 
 @app.route('/ping')
 def ping():
-    return "pong", 200
+    if not server_ready:  # Check if the server is ready
+        return jsonify({"status": "not ready"}), 503
+    return jsonify({"status": "ready"}), 200
 
 @app.route('/compare', methods=['POST'])
 def compare():
