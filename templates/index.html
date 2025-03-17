@@ -78,6 +78,119 @@
       border-radius: 12px;
       font-size: 1rem;
     }
+
+      .cat-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+      background-color: rgba(255, 255, 255, 0.8);
+      color: #db2777;
+      padding: 0.6rem 1rem;
+      border-radius: 50px;
+      font-size: 1.5rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .cat-button:hover {
+      background-color: #fce7f3;
+    }
+
+    .cat-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.95);
+      z-index: 998;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      gap: 1rem;
+      flex-wrap: nowrap;
+    }
+
+    .cat-frame {
+      flex: 1 1 50%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .cat-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.3);
+    }
+
+    .arrow-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .arrow-btn:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .arrow-left {
+      left: 10px;
+    }
+
+    .arrow-right {
+      right: 10px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.3);
+      color: white;
+      border: none;
+      font-size: 1.2rem;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    .close-btn:hover {
+      background-color: rgba(255, 255, 255, 0.6);
+    }
+
+    @media screen and (max-width: 768px) {
+      .cat-overlay {
+        flex-direction: column;
+      }
+      .cat-frame {
+        max-width: 100%;
+        height: 50vh;
+      }
+    }
+
+
   </style>
 </head>
 <body>
@@ -96,7 +209,61 @@
     </div>
   </div>
 
+  <div class="cat-button" onclick="toggleCats()">🐾</div>
+
+  <div id="catImages" class="cat-overlay" style="display: none;">
+    <button class="close-btn" onclick="toggleCats()">✕</button>
+  
+    <div class="cat-frame">
+      <button class="arrow-btn arrow-left" onclick="prevPhoto(1)">←</button>
+      <img id="catImg1" src="../static/chat1_1.jpg" class="cat-img" alt="Cadre 1">
+      <button class="arrow-btn arrow-right" onclick="nextPhoto(1)">→</button>
+    </div>
+  
+    <div class="cat-frame">
+      <button class="arrow-btn arrow-left" onclick="prevPhoto(2)">←</button>
+      <img id="catImg2" src="../static/chat2_1.jpg" class="cat-img" alt="Cadre 2">
+      <button class="arrow-btn arrow-right" onclick="nextPhoto(2)">→</button>
+    </div>
+  </div>
+  
+
+
   <script>
+
+    /* Chats!!!!!!!!!!!!!!!!!!!!!!! */
+      const catPhotos1 = ["../static/chat1_1.jpg", "../static/chat1_2.jpg", "../static/chat1_3.jpg", "../static/chat1_4.jpg", "../static/chat1_5.jpg", "../static/chat1_6.jpg", "../static/chat1_7.jpg"];
+      const catPhotos2 = ["../static/chat2_1.jpg", "../static/chat2_2.jpg", "../static/chat2_3.jpg", "../static/chat2_4", "../static/chat2_5"];
+      let index1 = 0;
+      let index2 = 0;
+
+      function toggleCats() {
+        const overlay = document.getElementById("catImages");
+        overlay.style.display = overlay.style.display === "flex" ? "none" : "flex";
+      }
+
+      function nextPhoto(frame) {
+        if (frame === 1) {
+          index1 = (index1 + 1) % catPhotos1.length;
+          document.getElementById("catImg1").src = catPhotos1[index1];
+        } else {
+          index2 = (index2 + 1) % catPhotos2.length;
+          document.getElementById("catImg2").src = catPhotos2[index2];
+        }
+      }
+
+      function prevPhoto(frame) {
+        if (frame === 1) {
+          index1 = (index1 - 1 + catPhotos1.length) % catPhotos1.length;
+          document.getElementById("catImg1").src = catPhotos1[index1];
+        } else {
+          index2 = (index2 - 1 + catPhotos2.length) % catPhotos2.length;
+          document.getElementById("catImg2").src = catPhotos2[index2];
+        }
+      }
+
+    /*Conneries que je comprend pas */
+
     document.getElementById("uploadForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       const formData = new FormData();
@@ -116,6 +283,7 @@
       } else {
         resultBox.innerHTML = `Classement général : ${data.classement_general}<br>Classement pharma : ${data.classement_pharma}`;
       }
+
     });
   </script>
 </body>
