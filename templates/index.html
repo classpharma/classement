@@ -133,25 +133,25 @@
     }
 
     .arrow-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: rgba(255, 255, 255, 0.2);
-      color: white;
+      background-color: #db2777;
       border: none;
-      font-size: 1.5rem;
-      width: 36px;
-      height: 36px;
+      color: rgb(255, 255, 255);
+      font-size: 20px;
       border-radius: 50%;
-      cursor: pointer;
-      transition: background-color 0.2s;
+      width: 35px;
+      height: 35px;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      cursor: pointer;
+  }
 
     .arrow-btn:hover {
-      background-color: rgba(255, 255, 255, 0.4);
+      background-color: #be2068;
     }
 
     .arrow-left {
@@ -160,24 +160,6 @@
 
     .arrow-right {
       right: 10px;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background-color: rgba(255, 255, 255, 0.3);
-      color: white;
-      border: none;
-      font-size: 1.2rem;
-      padding: 6px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      z-index: 999;
-    }
-
-    .close-btn:hover {
-      background-color: rgba(255, 255, 255, 0.6);
     }
 
     @media screen and (max-width: 768px) {
@@ -212,7 +194,6 @@
   <div class="cat-button" onclick="toggleCats()">🐾</div>
 
   <div id="catImages" class="cat-overlay" style="display: none;">
-    <button class="close-btn" onclick="toggleCats()">✕</button>
   
     <div class="cat-frame">
       <button class="arrow-btn arrow-left" onclick="prevPhoto(1)">←</button>
@@ -232,8 +213,8 @@
   <script>
 
     /* Chats!!!!!!!!!!!!!!!!!!!!!!! */
-      const catPhotos1 = ["../static/chat1_1.jpg", "../static/chat1_2.jpg", "../static/chat1_3.jpg", "../static/chat1_4.jpg", "../static/chat1_5.jpg", "../static/chat1_6.jpg", "../static/chat1_7.jpg"];
-      const catPhotos2 = ["../static/chat2_1.jpg", "../static/chat2_2.jpg", "../static/chat2_3.jpg", "../static/chat2_4", "../static/chat2_5"];
+      const catPhotos1 = ["../static/chat1_1.png", "../static/chat1_2.png", "../static/chat1_3.png", "../static/chat1_4.png", "../static/chat1_5.png", "../static/chat1_6.png", "../static/chat1_7.png"];
+      const catPhotos2 = ["../static/chat2_1.png", "../static/chat2_2.png", "../static/chat2_3.png", "../static/chat2_4.png", "../static/chat2_5.png"];
       let index1 = 0;
       let index2 = 0;
 
